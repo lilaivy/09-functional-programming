@@ -22,17 +22,20 @@ Article.prototype.toHtml = function() {
 };
 
 Article.loadAll = rows => {
+  console.log('we are here');
   rows.sort((a,b) => (new Date(b.publishedOn)) - (new Date(a.publishedOn)));
 
   // TODO: Refactor this forEach code, by using a `.map` call instead, since want we are trying to accomplish
   // is the transformation of one colleciton into another.
 
-  /* OLD forEach():
-  rawData.forEach(function(ele) {
-  Article.all.push(new Article(ele));
-});
-*/
+  //  OLD forEach():
+//   rawData.forEach(function(ele) {
+//   Article.all.push(new Article(ele));
+// });
 
+  Article.all= rows.map(function(article){
+    return new Article(article);
+  })
 };
 
 Article.fetchAll = callback => {
@@ -42,12 +45,17 @@ Article.fetchAll = callback => {
       Article.loadAll(results);
       callback();
     }
-  )
+  ).catch(console.error);
 };
 
 // TODO: Chain together a `map` and a `reduce` call to get a rough count of all words in all articles.
 Article.numWordsAll = () => {
-  return Article.all.map().reduce()
+  return Article.all.map(function(ele){
+    return ele.body;
+
+  }).reduce(function(acc,curr){
+    return acc + curr.length;
+  },0)
 };
 
 // TODO: Chain together a `map` and a `reduce` call to produce an array of unique author names.
