@@ -21,9 +21,7 @@ Article.prototype.toHtml = function() {
 };
 
 Article.loadAll = rows => {
-  console.log('we are here');
   rows.sort((a,b) => (new Date(b.publishedOn)) - (new Date(a.publishedOn)));
-
   // DONE TODO: Refactor this forEach code, by using a `.map` call instead, since want we are trying to accomplish
   // is the transformation of one colleciton into another.
 
@@ -32,7 +30,7 @@ Article.loadAll = rows => {
 //   Article.all.push(new Article(ele));
 // });
 
-  Article.all= rows.map(function(article){
+  Article.all = rows.map(function(article){
     return new Article(article);
   })
 };
