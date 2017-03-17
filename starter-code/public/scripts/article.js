@@ -30,6 +30,8 @@ Article.loadAll = rows => {
 //   Article.all.push(new Article(ele));
 // });
 
+
+//whatever you return is what that function is going to evaluate to. we're telling it to return an instance of Article....whatever the function returns is the value that will go into the array that map asks
   Article.all = rows.map(function(article){
     return new Article(article);
   })
@@ -46,6 +48,13 @@ Article.fetchAll = callback => {
 };
 
 // DONE TODO: Chain together a `map` and a `reduce` call to get a rough count of all words in all articles.
+// ele is each item in the array that we're mapping, we know that because that's how map works, we're not calling a function, map is (that's why there are no parenthes there ();)...you give it a function without calling it.
+//we're reutning ele (each article). body of each article and calling split on empty space
+//what gets returned becomes the new index in the array.
+//the entire map call evaluates to [['some', 'text']] for every item in the original array (articles)....next we're calling reduce on that.
+//map produces an array of same length
+//filter produces a smaller array
+//reduce produces a single value
 Article.numWordsAll = () => {
   return Article.all.map(function(ele){
     return ele.body.split(' ');
@@ -59,6 +68,8 @@ Article.numWordsAll = () => {
 Article.allAuthors = () => {
   return Article.all.map(function (ele) {
     return ele.author;
+    //array here is the  array we just mapped, the one we're chaining off of, it's not the one we're creating.
+    //index of, returns the index that a given item is at, returns the first index that an item is at, so it won't allow an author to have more than one index position...so if it's alreayd filtered into the array, it will evaluate as false and throw out any duplicate authors 
   }).filter(function (author, i, array) {
     return array.indexOf(author) === i;
   });
@@ -70,12 +81,16 @@ Article.numWordsByAuthor = () => {
     // the author's name, as well as the total number of words across all articles
     // written by the specified author.
     // .split()
+    // we're going through the all authors array and turning them into an object...we have an array of uniqu authors from above, and what we want is an array of objects with information for each of those objects
+    //filtering down all the articles down to only the articles of those unique authors
     var rObj = {};
     rObj.authorName = currName;
+
+    //don't need brackets, dot notation evaluates to the same thing.
     rObj['numWords'] = Article.all.filter(function (ele) {
-      if (ele.author === currName) {
-        return ele;
-      }
+      return ele.author === currName;
+        // return ele;
+  //inside the 
     }).map(function (ele) {
       return ele.body.split(' ');
     }).reduce(function (acc, curr) {
@@ -84,6 +99,22 @@ Article.numWordsByAuthor = () => {
     return rObj;
   })
 };
+
+// re facturing the function from lines 86 to 99
+// Article.numWordsByAuthor = () => {
+//   return Article.allAuthors().map(currName => {
+//     return {
+//       authorName: currName,
+//       numWords: Article.all.filter(function (ele) {
+//         return ele.author === currName;
+//       }).map(function (ele) {
+//         return ele.body.split(' ');
+//       }).reduce(function (acc, curr) {
+//         return acc + curr.length;
+//       }, 0)
+//     };
+//   });
+// };
 
 Article.truncateTable = callback => {
   $.ajax({
