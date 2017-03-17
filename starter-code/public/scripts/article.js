@@ -2,7 +2,7 @@
 
 // REVIEW: Check out all of the functions that we've cleaned up with arrow function syntax.
 
-// TODO: Wrap the entire contents of this file in an IIFE.
+// DONE TODO: Wrap the entire contents of this file in an IIFE.
 // Pass in to the IIFE a module, upon which objects can be attached for later access.
 function Article(opts) {
   // REVIEW: Lets review what's actually happening here, and check out some new syntax!!
@@ -13,7 +13,6 @@ Article.all = [];
 
 Article.prototype.toHtml = function() {
   var template = Handlebars.compile($('#article-template').text());
-
   this.daysAgo = parseInt((new Date() - new Date(this.publishedOn))/60/60/24/1000);
   this.publishStatus = this.publishedOn ? `published ${this.daysAgo} days ago` : '(draft)';
   this.body = marked(this.body);
@@ -22,10 +21,8 @@ Article.prototype.toHtml = function() {
 };
 
 Article.loadAll = rows => {
-  console.log('we are here');
   rows.sort((a,b) => (new Date(b.publishedOn)) - (new Date(a.publishedOn)));
-
-  // TODO: Refactor this forEach code, by using a `.map` call instead, since want we are trying to accomplish
+  // DONE TODO: Refactor this forEach code, by using a `.map` call instead, since want we are trying to accomplish
   // is the transformation of one colleciton into another.
 
   //  OLD forEach():
@@ -33,7 +30,7 @@ Article.loadAll = rows => {
 //   Article.all.push(new Article(ele));
 // });
 
-  Article.all= rows.map(function(article){
+  Article.all = rows.map(function(article){
     return new Article(article);
   })
 };
@@ -48,27 +45,43 @@ Article.fetchAll = callback => {
   ).catch(console.error);
 };
 
-// TODO: Chain together a `map` and a `reduce` call to get a rough count of all words in all articles.
+// DONE TODO: Chain together a `map` and a `reduce` call to get a rough count of all words in all articles.
 Article.numWordsAll = () => {
   return Article.all.map(function(ele){
-    return ele.body;
+    return ele.body.split(' ');
 
   }).reduce(function(acc,curr){
     return acc + curr.length;
   },0)
 };
 
-// TODO: Chain together a `map` and a `reduce` call to produce an array of unique author names.
+// DONE TODO: Chain together a `map` and a `filter` call to produce an array of unique author names.
 Article.allAuthors = () => {
-  return Article.all.map().reduce();
+  return Article.all.map(function (ele) {
+    return ele.author;
+  }).filter(function (author, i, array) {
+    return array.indexOf(author) === i;
+  });
 };
 
 Article.numWordsByAuthor = () => {
-  return Article.allAuthors().map(author => {
-    // TODO: Transform each author string into an object with properties for
+  return Article.allAuthors().map(currName => {
+    // DONE TODO: Transform each author string into an object with properties for
     // the author's name, as well as the total number of words across all articles
     // written by the specified author.
-
+    // .split()
+    var rObj = {};
+    rObj.authorName = currName;
+    rObj['numWords'] = Article.all.filter(function (ele) {
+      if (ele.author === currName) {
+        return ele;
+      }
+    }).map(function (ele) {
+      return ele.body.split(' ');
+    }).reduce(function (acc, curr) {
+      return acc + curr.length;
+    }, 0);
+    return rObj;
   })
 };
 
