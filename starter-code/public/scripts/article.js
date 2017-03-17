@@ -13,7 +13,6 @@ Article.all = [];
 
 Article.prototype.toHtml = function() {
   var template = Handlebars.compile($('#article-template').text());
-
   this.daysAgo = parseInt((new Date() - new Date(this.publishedOn))/60/60/24/1000);
   this.publishStatus = this.publishedOn ? `published ${this.daysAgo} days ago` : '(draft)';
   this.body = marked(this.body);
@@ -51,7 +50,7 @@ Article.fetchAll = callback => {
 // DONE TODO: Chain together a `map` and a `reduce` call to get a rough count of all words in all articles.
 Article.numWordsAll = () => {
   return Article.all.map(function(ele){
-    return ele.body;
+    return ele.body.split(' ');
 
   }).reduce(function(acc,curr){
     return acc + curr.length;
@@ -69,19 +68,18 @@ Article.allAuthors = () => {
 
 Article.numWordsByAuthor = () => {
   return Article.allAuthors().map(currName => {
-    // WIP TODO: Transform each author string into an object with properties for
+    // DONE TODO: Transform each author string into an object with properties for
     // the author's name, as well as the total number of words across all articles
     // written by the specified author.
     // .split()
     var rObj = {};
-    rObj.author = currName;
+    rObj.authorName = currName;
     rObj['numWords'] = Article.all.filter(function (ele) {
       if (ele.author === currName) {
-        console.log(ele.author);
-        return ele.body;
+        return ele;
       }
-    }).map(function (auth) {
-      return auth.body;
+    }).map(function (ele) {
+      return ele.body.split(' ');
     }).reduce(function (acc, curr) {
       return acc + curr.length;
     }, 0);
